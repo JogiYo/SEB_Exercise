@@ -15,7 +15,6 @@ function isIsogram(str) {
       }
       else {
         return false;
-        break;
       }
     }
     // for문을 빠져나왔다면 중복되는 알파벳이 없는 것이므로 true를 리턴한다.
