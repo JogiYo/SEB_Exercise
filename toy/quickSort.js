@@ -1,24 +1,32 @@
 const quickSort = function (arr, standard = (el) => el) {
+    const swap = function(arr, i, j) {
+        let temp = arr[j];
+        arr[j] = arr[i];
+        arr[i] = temp;
+    }
+    
     const partition = function(arr, left, right) {
+        let mid = Math.floor((left+right) / 2);
+        swap(arr, left, mid);
+
+        let pivot_origin = arr[left];
         let pivot = standard(arr[left]);
-        let start = left + 1;
+        let start = left;
         let end = right;
 
         while(start < end) {
             while(standard(arr[end]) > pivot) end--;
-            while(start < end && standard(arr[start]) < pivot) start++;
+            while(start < end && standard(arr[start]) <= pivot) start++;
             
-            let temp = arr[start];
-            arr[start] = arr[end];
-            arr[end] = temp;
+            swap(arr, start, end);
         }
-        arr[left] = arr[end];
-        arr[end] = pivot;
+        arr[left] = arr[start];
+        arr[start] = pivot_origin;
 
-        return end;
+        return start;
     }
 
-    const q_sort =  (arr, left, right) => {
+        const q_sort =  (arr, left, right) => {
         if(left >= right) return;
 
         let i = partition(arr, left, right);
