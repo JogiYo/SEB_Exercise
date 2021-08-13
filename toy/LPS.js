@@ -13,7 +13,7 @@ const LPS = function (str) {
     
     return resultStr.length;
   
-    // const result = str.match(/(\w*).*\1/);
+    // const result = str.match(/^(\w*).*\1$/);
     // return result[1].length;
 };
 
