@@ -1,11 +1,8 @@
 function radixSort(arr) {
     // https://rninche01.tistory.com/entry/%EC%A0%95%EB%A0%AC-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-05-%EA%B3%84%EC%88%98-%EB%B0%8F-%EA%B8%B0%EC%88%98-%EC%A0%95%EB%A0%ACCounting-Sort-Radix-Sort
+    // https://gaemi606.tistory.com/entry/%EA%B8%B0%EC%88%98-%EC%A0%95%EB%A0%ACRadix-sort
     const getMax = (arr) => {
         return Math.max(...arr);
-    }
-
-    const getMin = (arr) => {
-        return Math.min(...arr);
     }
 
     const countingSort = (arr, n, exp) => {
@@ -22,34 +19,38 @@ function radixSort(arr) {
             count[i] += count[i-1];
         }
 
+        // 정렬
         for(let i = n - 1; i >= 0; --i) {
             output[count[parseInt(arr[i]/exp) % 10] - 1] = arr[i];
             count[parseInt(arr[i]/exp) % 10]--;
         }
 
+        // 배열 복사
         for(let i = 0; i < n; ++i) {
             arr[i] = output[i];
         }
     }
 
-    let max = getMax(arr);
-    let min = getMin(arr);
+    let left = [];
+    let right = [];
 
-    if(min < 0) {
-        for(let i = 0; i < arr.length; ++i) {
-            arr[i] -= min;
-        }
+    for(let i = 0; i < arr.length; ++i) {
+        if(arr[i] >= 0) right.push(arr[i]);
+        else left.push(arr[i] * -1);
+    }
+
+    let left_max = getMax(left);
+    let right_max = getMax(right);
+
+    for(let exp = 1; parseInt(left_max/exp) > 0; exp *= 10) {
+        countingSort(left, left.length, exp);
+    }
+
+    for(let exp = 1; parseInt(right_max/exp) > 0; exp *= 10) {
+        countingSort(right, right.length, exp);
     }
     
-    for(let exp = 1; parseInt(max/exp) > 0; exp *= 10) {
-        countingSort(arr, arr.length, exp);
-    }
-
-    if(min < 0) {
-        arr[i] += min;
-    }
-
-    return arr;
+    return left.reverse().map(el => el*-1).concat(right);
 }
 
 let output = radixSort([3, 1, 21]);
