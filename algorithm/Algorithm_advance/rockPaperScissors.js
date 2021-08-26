@@ -6,15 +6,12 @@ function rockPaperScissors (rounds) {
 
     const perm = (choice, rounds) => {
         if(rounds ===  0) {
-            let new_arr = [...choice];
-            result.push(new_arr);
+            result.push([...choice]);
             return;
         }
 
         for(let i = 0; i < arr.length; ++i) {
-            choice.push(arr[i]);
-            perm(choice, rounds - 1);
-            choice.pop();
+            perm([...choice, arr[i]], rounds - 1);
         }
 
         return;
