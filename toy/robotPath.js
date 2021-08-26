@@ -1,47 +1,34 @@
 const robotPath = function (room, src, dst) {
-    let visited = new Array(room.length);
-    for(let i = 0; i < visited.length; ++i) {
-        visited[i] = new Array(room[0].length).fill(false);
+    let new_arr = new Array(room.length);
+    for(let i = 0; i < new_arr.length; ++i) {
+        new_arr[i] = new Array(room[0].length).fill(0);
     }
 
-    // 1인 부분 true로 바꿔주기
     for(let i = 0; i < room.length; ++i) {
         for(let j = 0; j < room[0].length; ++j) {
-            if(room[i][j] === 1) visited[i][j] = true;
-        }
-    }
-    
-    let queue = [];
-    queue.push([...src, 0]);
-
-    while(queue.length !== 0) {
-        let point = queue.shift();
-        let m = point[0];
-        let n = point[1];
-        let step = point[2];
-        visited[m][n] = true;
-
-        if(m === dst[0] && n === dst[1]) return step;
-        // 상
-        if(m-1 >= 0 && room[m-1][n] === 0 && !visited[m-1][n]) {
-            queue.push([m-1, n, step + 1]);
-        }
-        // 하
-        if(m+1 < room.length && room[m+1][n] === 0 && !visited[m+1][n]) {
-            queue.push([m+1, n, step + 1]);
-        }
-        // 좌
-        if(n-1 >= 0 && room[m][n-1] === 0 && !visited[m][n-1]) {
-            queue.push([m, n-1, step + 1]);
-        }
-        //  우
-        if(n+1 < room[0].length && room[m][n+1] === 0 && !visited[m][n+1]) {
-            queue.push([m, n+1, step + 1]);
+            if(room[i][j] === 1) new_arr[i][j] = -1;
         }
     }
 
-    return null;
+    const dfs = (m, n, count) => {
+        if(m < 0 || m >= new_arr.length || n < 0 || n >= new_arr[0].length) return;
+
+        if(new_arr[m][n] === 0 || new_arr[m][n] > count) {
+            new_arr[m][n] = count;
+        }
+        else  return;
+
+        dfs(m-1, n, count + 1);
+        dfs(m+1, n, count + 1);
+        dfs(m, n-1, count + 1);
+        dfs(m, n+1, count + 1);
+    }
+
+    let [m, n] = src;
+    dfs(m, n, 0);
+    return new_arr[dst[0]][dst[1]];
 };
+
 let room = [
     [0, 0, 0, 0, 0, 0],
     [0, 1, 1, 0, 1, 0],
