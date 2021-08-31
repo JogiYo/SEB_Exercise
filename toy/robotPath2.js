@@ -1,55 +1,56 @@
 const robotPath2 = function (room, src, sDir, dst, dDir) {
     let new_arr = new Array(room.length);
     for(let i = 0; i < new_arr.length; ++i) {
-        new_arr[i] = new Array(room[0].length).fill(0);
-    }
-
-    for(let i = 0; i < room.length; ++i) {
-        for(let j = 0; j < room[0].length; ++j) {
-            if(room[i][j] === 1) new_arr[i][j] = -1;
-        }
+        new_arr[i] = new Array(room[0].length).fill(Number.MAX_SAFE_INTEGER);
     }
 
     let [r, c] = src;
-    let queue = [[r, c, sDir, 0]];
-    new_arr[r][c] = 'x';
+    let queue = [[r, c, sDir]];
+    new_arr[r][c] = 0;
 
-    // 상 : 1, 우 : 2, 하 : 3, 좌 : 4
     while(queue.length !== 0) {
-        let [row, col, dir, count] = queue.shift();
-        new_arr[row][col] = 'x';
+        let [row, col, dir] = queue.shift();
 
-        if(row === dst[0] && col === dst[1]) {
-            let rotate = Math.abs(dir - dDir)
-            if(rotate === 0) return count;
-            else if(rotate === 1) return count + 1;
-            else return count + 2;
-        }
-        // 상
-        if(row - 1 >= 0 && new_arr[row-1][col] === 0) {
-            let cnt = Math.abs(dir - 1);
-            if(cnt === 0) queue.push([row-1, col, 1, count]);
-            else queue.push([row-1, col, 1, count + cnt + 1]);
-        }
-        // 하
-        if(row + 1 < new_arr.length && new_arr[row+1][col] === 0) {
-            let cnt = Math.abs(dir - 3);
-            if(cnt === 0) queue.push([row+1, col, 3, count]);
-            else queue.push([row+1, col, 3, count + cnt + 1]);
-        }
-        // 좌
-        if(col - 1 >= 0 && new_arr[row][col-1] === 0) {
-            let cnt = Math.abs(dir - 4);
-            if(cnt === 0) queue.push([row, col-1, 4, count]);
-            else queue.push([row, col-1, 4, count + cnt + 1]);
-        }
-        // 우
-        if(col + 1 <= new_arr[0].length && new_arr[row][col+1] === 0) {
-            let cnt = Math.abs(dir - 2);
-            if(cnt === 0) queue.push([row, col+1, 2, count]);
-            else queue.push([row, col+1, 2, count + cnt + 1])
+        for(let i = 1; i <= 4; ++i) {
+            let cur_r = row;
+            let cur_c = col;
+
+            if(i === 1) cur_r -= 1;
+            else if(i === 2) cur_c += 1;
+            else if(i === 3) cur_r += 1;
+            else cur_c -= 1;
+
+            if(cur_r < 0 || cur_c < 0 || cur_r >= room.length || cur_c >= room[0].length || room[cur_r][cur_c] === 1) continue;
+
+            let rotate = Math.abs(i - dir);
+            let count;
+            // 직진까지 포함
+            // 방향에 따라 움직인 횟수를 가져온다.
+            if(rotate === 0) {
+                count = new_arr[row][col] || 1;
+            }
+            else if(rotate % 2 === 1) {
+                count = new_arr[row][col] + 2
+            }
+            else {
+                count = new_arr[row][col] + 3
+            }
+
+            // 도착지점이라면 회전만 해준다.
+            if(cur_r === dst[0] && cur_c === dst[1]) {
+                let dif = Math.abs(i - dDir);
+                if(dif % 2 === 1) dif = 1;
+                count += dif;
+            }
+            // 각 지점에서의 움직인 횟수를 갱신한다.
+            if(count < new_arr[cur_r][cur_c]) {
+                queue.push([cur_r, cur_c, i]);
+                new_arr[cur_r][cur_c] = count;
+            }
         }
     }
+
+    return new_arr[dst[0]][dst[1]];
 };
 
 let room = [
