@@ -1,25 +1,19 @@
-// https://bactoria.github.io/2019/03/14/%EC%84%B8%EA%B7%B8%EB%A8%BC%ED%8A%B8-%ED%8A%B8%EB%A6%AC-(%EA%B5%AC%EA%B0%84%ED%95%A9,-%EA%B5%AC%EA%B0%84%EA%B3%B1,-%EC%B5%9C%EC%86%8C%EA%B0%92,-%EC%B5%9C%EB%8C%80%EA%B0%92)/
 const rangeMinimum = function (arr, ranges) {
-    // TODO: 여기에 코드를 작성합니다.
-    const init = (arr, start, end) =>  {
+    const init = (arr, start, end, idx) =>  {
         if(start === end) {
-            return {value : arr[start]};
+            tree[idx] = arr[start];
+            return arr[start];
         }
 
         let mid = parseInt((start +  end) / 2);
-        let left = init(arr, start, mid);
-        let right = init(arr, mid + 1, end);
-
-        return {
-            value : Math.min(left.value, right.value),
-            left,
-            right
-        }
+        tree[idx] = Math.min(init(arr, start, mid, 2*idx + 1), init(arr, mid+1, end, 2*idx + 2));
+        
+        return tree[idx];
     }
 
-    const find = (ts, te, rs,  re, tree) => {
+    const find = (ts, te, rs,  re, idx) => {
         if(rs <=  ts  &&  te <= re) {
-            return tree.value;
+            return tree[idx];
         }
 
         if(te < rs || re < ts) {
@@ -27,20 +21,19 @@ const rangeMinimum = function (arr, ranges) {
         }
 
         let mid =  parseInt((ts + te) / 2);
-        return  Math.min(find(ts, mid, rs, rs, tree.left), find(mid+1, te, rs, re, tree.right));
+        return  Math.min(find(ts, mid, rs, re, 2*idx + 1), find(mid+1, te, rs, re, 2*idx + 2));
     }
 
-    const get = (arr, range) => {
-        let [rs, re] = range;
-        let end = arr.length - 1;
-        let tree = init(arr, 0, end);
-        let min = find(0, end, rs, re, tree);
-        return min;
-    }
+    // 원래는 트리의 높이를 고려하여 배열의 크기를 정해준다.
+    let height = Math.ceil(Math.log2(arr.length)) + 1;
+    let S = Math.pow(2, height-1);
+    // 트리의 노드 개수는 2^n-1개다.
+    let tree = Array(S*2 - 1).fill(null);
+    init(arr, 0, arr.length-1, 0);
 
     let result = [];
     for(let range of ranges) {
-        result.push(get(arr, range));
+        result.push(find(0, arr.length-1, range[0], range[1], 0));
     }
     return result;
 };
