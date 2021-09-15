@@ -27,7 +27,7 @@ const jobAllocation = function (jobs, workersNum) {
     }
     // 인덱스가 0부터 시작이기 때문에 workersNum은 주어진 수의 -1을 해서 시작한다.
     return dfs(0, 0, workersNum - 1, memo);
-  };
+};
 
 let jobs = [1, 2, 3, 4, 5, 6, 7];
 let workersNum = 3;
